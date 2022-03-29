@@ -124,9 +124,9 @@ if [ ! -f ${DB_PROPERTIES} ]; then
       chown xroad:xroad /etc/xroad/db.properties
       chmod 640 /etc/xroad/db.properties
       set_db_props() {
-        crudini --set --inplace "$ROOT_PROPERTIES" "" "$1.database.admin_user" "${XROAD_DATABASE_NAME}_$1_admin"
+        crudini --set --inplace "$ROOT_PROPERTIES" "" "$1.database.admin_user" "${XROAD_DATABASE_NAME}_$1_admin${XROAD_DB_USER_SUFFIX}"
         echo "$1.hibernate.connection.username= ${XROAD_DATABASE_NAME}_$1" >> "${DB_PROPERTIES}"
-        echo "$1.hibernate.connection.url = jdbc:postgresql://${XROAD_DB_HOST}:${XROAD_DB_PORT}/${XROAD_DATABASE_NAME}_$1" >> "${DB_PROPERTIES}"
+        echo "$1.hibernate.connection.url = jdbc:postgresql://${XROAD_DB_HOST}:${XROAD_DB_PORT}/${XROAD_DATABASE_NAME}_$1${XROAD_DB_USER_SUFFIX}" >> "${DB_PROPERTIES}"
       }
       set_db_props serverconf
       if [ -n "$opmonitor" ]; then
@@ -170,6 +170,7 @@ if [[ "$RECONFIG_REQUIRED" == "true" ]]; then
     if [[ -n "$XROAD_DB_PWD" ]]; then
       if [[ -w "$ROOT_PROPERTIES" ]]; then
         crudini --set --inplace "$ROOT_PROPERTIES" "" "postgres.connection.password" "${XROAD_DB_PWD}"
+        crudini --set --inplace "$ROOT_PROPERTIES" "" "postgres.connection.user" "postgres${XROAD_DB_USER_SUFFIX}"
       else
         warn "XROAD_DB_PWD is set but $ROOT_PROPERTIES is not writable"
       fi
